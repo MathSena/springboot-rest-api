@@ -2,6 +2,7 @@ package com.mathsena.springbootrestapi.controller;
 
 import com.mathsena.springbootrestapi.bean.Student;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
@@ -15,13 +16,16 @@ public class StudentController {
 
 
     @GetMapping("/students")
-    public Student getStudent(){
+    public ResponseEntity<Student> getStudent(){
         Student student = new Student(1, "Matheus", "Sena");
-        return student;
+        //return new ResponseEntity<>(student, HttpStatus.OK);
+        // return ResponseEntity.ok(student);
+        return ResponseEntity.ok().header("custom-header", "Matheus").body(student);
     }
 
+
     @GetMapping("/all-students")
-    public List<Student> getAllStudents(){
+    public ResponseEntity<List<Student>> getAllStudents(){
         List<Student> students = new ArrayList<>();
         students.add(new Student(1, "Cássio", "Ramos"));
         students.add(new Student(2, "Fagner", "Silva"));
@@ -34,7 +38,7 @@ public class StudentController {
         students.add(new Student(10, "Roger", "Guedes"));
         students.add(new Student(12, "Vanderlei", "Luxemburgo"));
 
-        return students;
+        return ResponseEntity.ok(students);
 
     }
 
@@ -43,20 +47,22 @@ public class StudentController {
     // http://localhost:8080/students/100
 
     @GetMapping("students/{id}/{first-name}/{last-name}")
-    public Student studentPathVariable(@PathVariable("id") int studentId,
+    public ResponseEntity<Student> studentPathVariable(@PathVariable("id") int studentId,
                                        @PathVariable("first-name") String firstName,
                                        @PathVariable("last-name") String lastName){
-        return new Student(studentId, firstName, lastName);
+        Student student = new Student(studentId, firstName, lastName);
+        return ResponseEntity.ok(student);
     }
 
     // Spring boot REST API with Request Param
     // http://localhost:8080/students/query?id=1&firstName=Diego&lastName=Maradona
 
     @GetMapping("students/query")
-     public Student studentRequestVariable(@RequestParam int id,
+     public ResponseEntity<Student> studentRequestVariable(@RequestParam int id,
                                            @RequestParam  String firstName,
                                            @RequestParam  String lastName){
-        return new Student(id, firstName, lastName);
+        Student student =  new Student(id, firstName, lastName);
+        return ResponseEntity.ok(student);
 
     }
 
@@ -65,28 +71,28 @@ public class StudentController {
     // @PostMapping and @RequestBody
 
     @PostMapping("students/create")
-    @ResponseStatus(HttpStatus.CREATED)
-    public Student createStudent(@RequestBody Student student){
+    // @ResponseStatus(HttpStatus.CREATED)
+    public ResponseEntity<Student> createStudent(@RequestBody Student student){
         System.out.println(student.getId());
         System.out.println(student.getFirstName());
         System.out.println(student.getLastName());
-        return student;
+        return new ResponseEntity<>(student, HttpStatus.CREATED);
     }
 
     //Spring Boot REST API That handles HTTP PUT Request - update an ID
 
     @PutMapping("students/{id}/update")
-    public Student updateStudent(@RequestBody Student student, @PathVariable("id") int studentId){
+    public ResponseEntity<Student> updateStudent(@RequestBody Student student, @PathVariable("id") int studentId){
         System.out.println(student.getFirstName());
         System.out.println(student.getLastName());
-        return student;
+        return ResponseEntity.ok(student);
 
     }
 
     //Spring Boot REST API that handles HTTP Delete Request - Deleting an id
     @DeleteMapping("students/{id}/delete")
-    public String deleteStudent(@PathVariable("id") int studentId){
-        return studentId + " deleted successfully";
+    public ResponseEntity<String> deleteStudent(@PathVariable("id") int studentId){
+        return ResponseEntity.ok(studentId + " deleted successfully");
 
     }
 
